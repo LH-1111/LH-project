@@ -13,6 +13,17 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-frtti -fexceptions"
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "cpp/CMakeLists.txt"
+        }
     }
 
     buildTypes {

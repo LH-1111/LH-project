@@ -29,18 +29,17 @@
         android:hint="111111"/>
 
     <Button
-        android:id="@+id/changeSrc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="changeSrc"/>
-
-
-    <Button
         android:id="@+id/TestJni"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TestJni"/>
 
+
+    <Button
+        android:id="@+id/Goto_audiotrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Goto_audiotrack"/>
 
     <EditText
         android:id="@+id/sample_text"

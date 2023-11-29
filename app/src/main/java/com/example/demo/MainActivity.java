@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -30,13 +31,15 @@ public class MainActivity extends AppCompatActivity {
     private static String TAG = "LHLOG";
     private TextView textView;
     private Handler handler;
-    private MyStruct myStruct ;
+    private MyStruct myStruct;
     HandlerThread handlerThread = new HandlerThread("MyHandlerThread");
 
 
     //test jni
     public native String getStringFromJNI();
+
     public native MyStruct getStruct(int x);
+
     static {
         System.loadLibrary("native-lib");
     }
@@ -74,23 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button changeSrc = findViewById(R.id.changeSrc);
-        changeSrc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Configuration config = getResources().getConfiguration();
-                //如果是横屏的话切换成竖屏
-                if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    onConfigurationChanged(config);
-                }
-                //如果竖屏的话切换成横屏
-                if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    onConfigurationChanged(config);
-                }
-            }
-        });
 
         //JNI TETS
         Button TestJni = findViewById(R.id.TestJni);
@@ -99,15 +85,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String result = getStringFromJNI();
                 // 将结果显示在TextView中
-                Log.d(TAG, "JNI TEST  +result：" +result );
+                Log.d(TAG, "JNI TEST  +result：" + result);
                 TextView textView = findViewById(R.id.sample_text);
                 textView.setText(result);
-                Log.d(TAG, "JNI TEST  +getStruct：" );
-                int x = 1 ;
+                Log.d(TAG, "JNI TEST  +getStruct：");
+                int x = 1;
                 MyStruct struct = getStruct(x);
                 int intValue = struct.intValue;
                 float floatValue = struct.floatValue;
-                Log.d(TAG, "JNI TEST  struct intValue  ：" +intValue + "floatValue :" + floatValue);
+                Log.d(TAG, "JNI TEST  struct intValue  ：" + intValue + "floatValue :" + floatValue);
             }
         });
 
@@ -151,19 +137,11 @@ public class MainActivity extends AppCompatActivity {
                 handler.sendMessage(message);
             }
         }).start();
-
+        findViewById(R.id.Goto_audiotrack).setOnClickListener(v -> {
+            Log.i("LHLOG ", "GO TO AUDIO TEST");
+            startActivity(new Intent(this, audioTrack.class));
+        });
     }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        String screen = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ? "横屏" : "竖屏";
-        Log.d(TAG, "handleMessage: onConfigurationChanged  " + screen);
-        Toast.makeText(MainActivity.this, "系统屏幕方向发生改变 \n 修改后的方向为" + screen, Toast.LENGTH_SHORT).show();
-    }
-
-
-
 }
 
 

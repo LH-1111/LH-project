@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.demo"
-        minSdk 31
+        minSdk 28
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -36,6 +36,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    ndkVersion '25.2.9519653'
 }
 
 dependencies {

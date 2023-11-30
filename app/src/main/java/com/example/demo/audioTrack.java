@@ -13,6 +13,14 @@ import android.media.AudioManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
 public class audioTrack extends AppCompatActivity {
     private static final int SAMPLE_RATE = 48000; // 采样率，通常为44100Hz
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_MONO; // 单声道
@@ -23,7 +31,6 @@ public class audioTrack extends AppCompatActivity {
     private AudioTrack audioTrack;
 
     private static String TAG = "LHLOG";
-
 
 
     AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -59,6 +66,29 @@ public class audioTrack extends AppCompatActivity {
         // 模拟PCM音频数据，实际中您需要替换为实际的音频数据
         short[] audioData = generateAudioData();
         audioTrack.write(audioData, 0, audioData.length); // 将音频数据写入AudioTrack
+        //java dump audiodata
+        String filePath = "/data/user/11/com.example.demo/files/audiodump" ;
+        try {
+            // 创建一个 FileOutputStream 对象，并指定文件路径
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+
+            // 使用 DataOutputStream 将数据写入文件
+            DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+
+            // 写入不同类型的数据
+            for (short value : audioData) {
+                dataOutputStream.writeShort(value);
+            }
+
+            // 关闭资源
+            dataOutputStream.close();
+            fileOutputStream.close();
+
+            Log.d(TAG,"Data stream writing is successful!");
+        } catch (IOException e) {
+            Log.d(TAG,"An error occurred while writing the data stream: " + e.getMessage());
+            e.printStackTrace();
+        }
         Log.d(TAG, "playAudio: 11111111");
 
     }
@@ -102,7 +132,7 @@ public class audioTrack extends AppCompatActivity {
             public void onClick(View view) {
                 audioTrack = createaudiotrack();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    Log.e(TAG, "Createaudiotrack streamtype : " +audioTrack.getAudioAttributes());
+                    Log.e(TAG, "Createaudiotrack streamtype : " + audioTrack.getAudioAttributes());
                 }
 
             }
@@ -118,7 +148,7 @@ public class audioTrack extends AppCompatActivity {
                         AudioManager.AUDIOFOCUS_GAIN);
                 if (result == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
                     playAudio();
-                }else {
+                } else {
                     Log.e(TAG, "button_Play error because audiofocus error or audiotrack is null");
                 }
             }
@@ -129,7 +159,7 @@ public class audioTrack extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int ruselt = audioManager.abandonAudioFocus(audioFocusChangeListener);
-                if(ruselt == audioManager.AUDIOFOCUS_LOSS ) {
+                if (ruselt == audioManager.AUDIOFOCUS_LOSS) {
                     stopAudio();
                 }
             }

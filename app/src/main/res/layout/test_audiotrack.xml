@@ -17,9 +17,16 @@
         android:text="Play_audiotrack"/>
 
     <Button
+        android:id="@+id/Pause_audiotrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pause_audiotrack"/>
+
+    <Button
         android:id="@+id/Stop_audiotrack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stop_audiotrack"/>
+        android:text="Release_audiotrack"
+        android:textAllCaps="true" />
 
 </LinearLayout>

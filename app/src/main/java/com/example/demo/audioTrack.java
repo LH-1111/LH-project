@@ -30,6 +30,8 @@ public class audioTrack extends AppCompatActivity {
     ; //audiotrack buffer size
     private AudioTrack audioTrack;
 
+    int audiofocusHolder = 0;
+
     private static String TAG = "LHLOG";
 
 
@@ -53,7 +55,7 @@ public class audioTrack extends AppCompatActivity {
 
     //create Music audiotrack
     public AudioTrack createaudiotrack() {
-        Log.d(TAG, "createaudiotrack:  " + AudioManager.STREAM_MUSIC);
+        Log.d(TAG, "createaudiotrack:  " + AudioManager.STREAM_MUSIC +"bufferSize : " + bufferSize);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize, AudioTrack.MODE_STREAM);
         return audioTrack;
     }
@@ -66,31 +68,41 @@ public class audioTrack extends AppCompatActivity {
         // 模拟PCM音频数据，实际中您需要替换为实际的音频数据
         short[] audioData = generateAudioData();
         audioTrack.write(audioData, 0, audioData.length); // 将音频数据写入AudioTrack
+
         //java dump audiodata
-        String filePath = "/data/user/11/com.example.demo/files/audiodump" ;
-        try {
-            // 创建一个 FileOutputStream 对象，并指定文件路径
-            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
-
-            // 使用 DataOutputStream 将数据写入文件
-            DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
-
-            // 写入不同类型的数据
-            for (short value : audioData) {
-                dataOutputStream.writeShort(value);
-            }
-
-            // 关闭资源
-            dataOutputStream.close();
-            fileOutputStream.close();
-
-            Log.d(TAG,"Data stream writing is successful!");
-        } catch (IOException e) {
-            Log.d(TAG,"An error occurred while writing the data stream: " + e.getMessage());
-            e.printStackTrace();
-        }
+//        String filePath = "/data/user/11/com.example.demo/files/audiodump" ;
+//        try {
+//            // 创建一个 FileOutputStream 对象，并指定文件路径
+//            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+//
+//            // 使用 DataOutputStream 将数据写入文件
+//            DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+//
+//            // 写入不同类型的数据
+//            for (short value : audioData) {
+//                dataOutputStream.writeShort(value);
+//            }
+//
+//            // 关闭资源
+//            dataOutputStream.close();
+//            fileOutputStream.close();
+//
+//            Log.d(TAG,"Data stream writing is successful!");
+//        } catch (IOException e) {
+//            Log.d(TAG,"An error occurred while writing the data stream: " + e.getMessage());
+//            e.printStackTrace();
+//        }
         Log.d(TAG, "playAudio: 11111111");
 
+    }
+
+    //pause audio
+    private void pause(){
+        if(audioTrack != null) {
+            audioTrack.pause();
+        }else{
+            Log.e(TAG, "audiotrack is null");
+        }
     }
 
     private short[] generateAudioData() {
@@ -99,7 +111,7 @@ public class audioTrack extends AppCompatActivity {
         // 通常，音频数据以16位PCM样本的形式存储在short数组中
         // 例如：short[] audioData = {sample1, sample2, sample3, ...};
         // 示例：生成一个简单的正弦波声音
-        int numSamples = SAMPLE_RATE * 2; // 2秒的音频数据
+        int numSamples = SAMPLE_RATE * 5; // 2秒的音频数据
         double sampleRate = (double) SAMPLE_RATE;
         double frequency = 440.0; // 440Hz的A音
         short[] audioData = new short[numSamples];
@@ -115,10 +127,11 @@ public class audioTrack extends AppCompatActivity {
     //Stop audiotrack
     private void stopAudio() {
         Log.d(TAG, "stopAudio strat");
+        Thread.interrupted();
         audioTrack.stop(); // 停止播放
-        Log.d(TAG, "stopAudio end");
-        audioTrack.release(); // 释放资源
         Log.d(TAG, "releaseaudiotrack");
+        audioTrack.release(); // 释放资源
+        audioTrack = null;
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +140,7 @@ public class audioTrack extends AppCompatActivity {
         setContentView(R.layout.test_audiotrack);
         //Create audiotrack
         Button button_Create = findViewById(R.id.Create_audiotrack);
+
         button_Create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,24 +156,52 @@ public class audioTrack extends AppCompatActivity {
         button_Play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int result = audioManager.requestAudioFocus(
+                audiofocusHolder = audioManager.requestAudioFocus(
                         audioFocusChangeListener,
                         AudioManager.STREAM_MUSIC,
                         AudioManager.AUDIOFOCUS_GAIN);
-                if (result == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
-                    playAudio();
+                Log.e(TAG, "button_Play requestAudioFocus" + audiofocusHolder);
+                if (audiofocusHolder == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playAudio();
+                        }
+                    }
+                    ).start();
                 } else {
                     Log.e(TAG, "button_Play error because audiofocus error or audiotrack is null");
                 }
             }
         });
+
+        //Pause audio
+        Button button_Pause = findViewById(R.id.Pause_audiotrack);
+        button_Pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (audiofocusHolder == audioManager.AUDIOFOCUS_GAIN) {
+                    pause();
+                }else{
+                    Log.e(TAG,"don't have audioFocus");
+                }
+            }
+        });
+
+
         //stop audiotrack
         Button button_stop = findViewById(R.id.Stop_audiotrack);
         button_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int ruselt = audioManager.abandonAudioFocus(audioFocusChangeListener);
-                if (ruselt == audioManager.AUDIOFOCUS_LOSS) {
+                if (audiofocusHolder == audioManager.AUDIOFOCUS_GAIN) {
+                    audiofocusHolder = audioManager.abandonAudioFocus(audioFocusChangeListener);
+                    Log.e(TAG,"audiofocusHolder" + audiofocusHolder);
+                }else{
+                    Log.e(TAG,"don't have audioFocus");
+                }
+                if (audiofocusHolder == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
+                    Log.e(TAG, "button_stop error because audiofocus error or audiotrack is null");
                     stopAudio();
                 }
             }

@@ -141,6 +141,11 @@ public class MainActivity extends AppCompatActivity {
             Log.i("LHLOG ", "GO TO AUDIO TEST");
             startActivity(new Intent(this, audioTrack.class));
         });
+
+        findViewById(R.id.Goto_MediaPlayer).setOnClickListener(v -> {
+            Log.i("LHLOG ", "GO TO MediaPlayer TEST");
+            startActivity(new Intent(this, MediaPlayerDemo.class));
+        });
     }
 }
 

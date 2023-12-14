@@ -26,6 +26,10 @@
         <activity
             android:name=".audioTrack"
             android:exported="true" />
+
+        <activity
+            android:name=".MediaPlayerDemo"
+            android:exported="true" />
     </application>
 
 </manifest>

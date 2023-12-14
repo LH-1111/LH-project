@@ -34,6 +34,8 @@ public class audioTrack extends AppCompatActivity {
 
     private static String TAG = "LHLOG";
 
+    // Mean play state
+    private boolean isPlaying;
 
     AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
@@ -55,19 +57,22 @@ public class audioTrack extends AppCompatActivity {
 
     //create Music audiotrack
     public AudioTrack createaudiotrack() {
-        Log.d(TAG, "createaudiotrack:  " + AudioManager.STREAM_MUSIC +"bufferSize : " + bufferSize);
+        Log.d(TAG, "createaudiotrack:  " + AudioManager.STREAM_MUSIC + "bufferSize : " + bufferSize);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize, AudioTrack.MODE_STREAM);
         return audioTrack;
     }
 
     private void playAudio() {
         Log.d(TAG, "playAudio: 000000000");
-
+        isPlaying = true;
         audioTrack.play();
         // 开始播放
         // 模拟PCM音频数据，实际中您需要替换为实际的音频数据
-        short[] audioData = generateAudioData();
-        audioTrack.write(audioData, 0, audioData.length); // 将音频数据写入AudioTrack
+        while (isPlaying) {
+            short[] audioData = generateAudioData();
+            audioTrack.write(audioData, 0, audioData.length);
+        }// 将音频数据写入AudioTrack
+
 
         //java dump audiodata
 //        String filePath = "/data/user/11/com.example.demo/files/audiodump" ;
@@ -92,15 +97,14 @@ public class audioTrack extends AppCompatActivity {
 //            Log.d(TAG,"An error occurred while writing the data stream: " + e.getMessage());
 //            e.printStackTrace();
 //        }
-        Log.d(TAG, "playAudio: 11111111");
-
     }
 
     //pause audio
-    private void pause(){
-        if(audioTrack != null) {
+    private void pause() {
+        isPlaying = false;
+        if (audioTrack != null) {
             audioTrack.pause();
-        }else{
+        } else {
             Log.e(TAG, "audiotrack is null");
         }
     }
@@ -161,7 +165,7 @@ public class audioTrack extends AppCompatActivity {
                         AudioManager.STREAM_MUSIC,
                         AudioManager.AUDIOFOCUS_GAIN);
                 Log.e(TAG, "button_Play requestAudioFocus" + audiofocusHolder);
-                if (audiofocusHolder == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
+                if (audiofocusHolder == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null && !isPlaying) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -182,8 +186,8 @@ public class audioTrack extends AppCompatActivity {
             public void onClick(View view) {
                 if (audiofocusHolder == audioManager.AUDIOFOCUS_GAIN) {
                     pause();
-                }else{
-                    Log.e(TAG,"don't have audioFocus");
+                } else {
+                    Log.e(TAG, "don't have audioFocus");
                 }
             }
         });
@@ -196,9 +200,9 @@ public class audioTrack extends AppCompatActivity {
             public void onClick(View view) {
                 if (audiofocusHolder == audioManager.AUDIOFOCUS_GAIN) {
                     audiofocusHolder = audioManager.abandonAudioFocus(audioFocusChangeListener);
-                    Log.e(TAG,"audiofocusHolder" + audiofocusHolder);
-                }else{
-                    Log.e(TAG,"don't have audioFocus");
+                    Log.e(TAG, "audiofocusHolder" + audiofocusHolder);
+                } else {
+                    Log.e(TAG, "don't have audioFocus");
                 }
                 if (audiofocusHolder == AudioManager.AUDIOFOCUS_GAIN && audioTrack != null) {
                     Log.e(TAG, "button_stop error because audiofocus error or audiotrack is null");

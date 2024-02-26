@@ -19,6 +19,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "competitor.h"
 #include "speechManager.h"
 
 using namespace std;
@@ -29,12 +30,13 @@ int main()
     speech_mgr.showmenu();
 
     int casenume = 0;
-    cout<<"请输入你的选择:";
+    cout << "请输入你的选择:";
     cin >> casenume;
     switch (casenume)
     {
     case 1:
     {
+        speech_mgr.startGame();
 
         break;
     }
@@ -50,7 +52,7 @@ int main()
     }
     case 4:
     {
-        cout<<"退出系统"<<endl;
+        cout << "退出系统" << endl;
         return 0;
     }
 

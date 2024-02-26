@@ -22,7 +22,7 @@ OBJS = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 $(BUILD_DIR)/%.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Rule for linking object files into executable
+#Rule for linking object files into executable
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 

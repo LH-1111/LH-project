@@ -37,7 +37,6 @@ int main()
     case 1:
     {
         speech_mgr.startGame();
-
         break;
     }
     case 2:

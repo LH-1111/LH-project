@@ -3,6 +3,10 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <deque>
+#include <numeric>
+#include <functional>
+#include <fstream>
 #include "competitor.h"
 
 class speechManager
@@ -15,6 +19,9 @@ public:
 
     void beforeStart();
     void createCompetitor();
+    void speechContest();
+    void showScore();
+    void saveRecord();
     ~speechManager();
 
     vector<int> v1;

@@ -7,7 +7,7 @@ class competitor
 {
 public: 
     string m_name;
-    float m_value[2];
+    double m_value[2];
     competitor();
-    competitor(string name, float value1[2]);
-};
+    competitor(string name, double value1[2]);
+};;
